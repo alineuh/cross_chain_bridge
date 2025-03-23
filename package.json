@@ -1,0 +1,31 @@
+{
+  "name": "cross_chain_bridge",
+  "version": "1.0.0",
+  "description": "Welcome to **Blockchain-101**, a collection of workshops designed to help you master the world of blockchain, no matter your level of knowledge. Whether you're just discovering Solidity or diving deep into advanced cryptography on the blockchain, DeFi, and account abstraction, there's something here for everyone! 🚀💡",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+  "indexer": "node scripts/indexer.js"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alineuh/cross_chain_bridge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/alineuh/cross_chain_bridge/issues"
+  },
+  "homepage": "https://github.com/alineuh/cross_chain_bridge#readme",
+  "devDependencies": {
+    "@types/node": "^22.13.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+
+}

@@ -25,12 +25,12 @@ contract TokenBridge is Ownable, ReentrancyGuard {
         uint256 nonce
     );
 
-    event Swap(
+    event DepositSwap(
         address indexed fromToken,
         address indexed toToken,
-        address indexed recipient,
-        uint256 fromAmount,
-        uint256 toAmount,
+        address indexed from,
+        address to,
+        uint256 amount,
         uint256 nonce
     );
 
@@ -38,7 +38,7 @@ contract TokenBridge is Ownable, ReentrancyGuard {
     uint256 private _nonce;
     mapping(address => bool) private _supportedTokens;
     mapping(uint256 => bool) private _processedDeposits;
-    mapping(address => mapping(address => uint256)) private _swapRates; // fromToken => toToken => rate
+    mapping(address => address) public tokenMappings; // NEW: fromToken => toToken
     bool private _paused;
 
     // Modifiers
@@ -73,28 +73,16 @@ contract TokenBridge is Ownable, ReentrancyGuard {
         _paused = false;
     }
 
-    function shutdown() external onlyOwner {
-        _paused = true;
+    function setTokenMapping(address tokenFrom, address tokenTo) external onlyOwner {
+        require(tokenTo != address(0), "Bridge: target token cannot be zero address");
+        tokenMappings[tokenFrom] = tokenTo;
     }
 
-    function resume() external onlyOwner {
-        _paused = false;
+    function getTokenMapping(address tokenFrom) external view returns (address) {
+        return tokenMappings[tokenFrom];
     }
 
-    function setSwapRate(address fromToken, address toToken, uint256 rate) external onlyOwner {
-        require(rate > 0, "Bridge: rate must be greater than 0");
-        _swapRates[fromToken][toToken] = rate;
-    }
-
-    function getSwapRate(address fromToken, address toToken) external view returns (uint256) {
-        return _swapRates[fromToken][toToken];
-    }
-
-    function deposit(
-        address token,
-        uint256 amount,
-        address recipient
-    ) external nonReentrant whenNotPaused {
+    function deposit(address token, uint256 amount, address recipient) external nonReentrant whenNotPaused {
         require(_supportedTokens[token], "Bridge: token not supported");
         require(amount > 0, "Bridge: amount must be greater than 0");
 
@@ -103,32 +91,19 @@ contract TokenBridge is Ownable, ReentrancyGuard {
         emit Deposit(token, msg.sender, recipient, amount, currentNonce);
     }
 
-    function depositAndSwap(
-        address fromToken,
-        address toToken,
-        uint256 fromAmount,
-        address recipient
-    ) external nonReentrant whenNotPaused {
-        require(_supportedTokens[fromToken], "Bridge: fromToken not supported");
-        require(_supportedTokens[toToken], "Bridge: toToken not supported");
-        require(fromAmount > 0, "Bridge: amount must be greater than 0");
+    function depositAndSwap(address tokenFrom, uint256 amount, address recipient) external nonReentrant whenNotPaused {
+        address tokenTo = tokenMappings[tokenFrom];
+        require(tokenTo != address(0), "Bridge: token mapping not set");
+        require(_supportedTokens[tokenFrom], "Bridge: tokenFrom not supported");
+        require(_supportedTokens[tokenTo], "Bridge: tokenTo not supported");
+        require(amount > 0, "Bridge: amount must be greater than 0");
 
-        uint256 rate = _swapRates[fromToken][toToken];
-        require(rate > 0, "Bridge: no swap rate available");
-
-        uint256 toAmount = (fromAmount * rate) / 1e18; // Assuming rate is scaled by 1e18
-        IERC20(fromToken).safeTransferFrom(msg.sender, address(this), fromAmount);
-
+        IERC20(tokenFrom).safeTransferFrom(msg.sender, address(this), amount);
         uint256 currentNonce = _nonce++;
-        emit Swap(fromToken, toToken, recipient, fromAmount, toAmount, currentNonce);
+        emit DepositSwap(tokenFrom, tokenTo, msg.sender, recipient, amount, currentNonce);
     }
 
-    function distribute(
-        address token,
-        address recipient,
-        uint256 amount,
-        uint256 depositNonce
-    ) external nonReentrant whenNotPaused onlyDistributor {
+    function distribute(address token, address recipient, uint256 amount, uint256 depositNonce) external nonReentrant whenNotPaused onlyDistributor {
         require(_supportedTokens[token], "Bridge: token not supported");
         require(!_processedDeposits[depositNonce], "Bridge: deposit already processed");
 
