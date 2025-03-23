@@ -96,3 +96,11 @@ In production, you should:
 
 ---
 
+### Holesky Addresses
+- Bridge : `0x38b4B2602bb087df7fa4508344837775d51e3261`
+- Token TST : `0xbC4cAe667fbA05a1206742581E6908bfB224f505`
+
+### Sepolia
+- Bridge : `0x48F1A795B903eE7b705009C0AAc8d56BAa359705`
+- Token TST : `0xacB0399DE3c433bF0b7aaF2B844cB642D89105Ae`
+
