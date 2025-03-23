@@ -18,8 +18,7 @@ Welcome to the `cross_chain_bridge` project! This repository contains a function
 ## 🧱 Project Structure
 
 ```
-/cross_chain_bridge
-├── /contracts       # Smart contracts (TokenBridge, TestToken)
+/cross_chain_bridge    
 ├── /scripts         # Deployment and indexer scripts
 ├── /indexer         # Env file for RPCs & config
 ├── foundry.toml     # Forge config
