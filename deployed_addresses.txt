@@ -1,2 +1,1 @@
-Holesky Bridge Contract: 0x28AFB54fdb3Ce0dbFa9EbF4272E9E0e9059b0976
-Target Chain Bridge Contract: 0x79798c974343EE41bF3A9C0bbEC76132A658355b
+
