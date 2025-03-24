@@ -20,9 +20,12 @@ Welcome to the `cross_chain_bridge` project! This repository contains a function
 ```
 /cross_chain_bridge    
 ├── /scripts         # Deployment and indexer scripts
-├── /indexer         # Env file for RPCs & config
+├── /src             # contracts
+├── /test            #testing files
 ├── foundry.toml     # Forge config
 ├── tsconfig.json    # TypeScript config
+├── package.json
+├── package-lock.json 
 ├── .env             # Runtime variables (private key, RPC URLs, etc.)
 ```
 
